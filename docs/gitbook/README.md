@@ -76,4 +76,3 @@ See [Licensing](getting-started/licensing.md) for setup details and [Plans & Fea
 ## Source License
 
 bb2gh is licensed under the [Business Source License 1.1](https://github.com/n8group-oss/bb2gh/blob/main/LICENSE). You can use it freely for any purpose except offering a competing migration service. After 4 years from each release, that version converts to Apache 2.0.
-
