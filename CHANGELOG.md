@@ -19,6 +19,24 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.5.7 (2026-02-17)
+
+### Fix
+
+- **plans**: handle empty optional fields in issue-to-Linear workflow
+
+## v0.5.6 (2026-02-17)
+
+### Fix
+
+- **plans**: add public:issue label to issue-to-Linear workflow
+
+## v0.5.5 (2026-02-17)
+
+### Fix
+
+- **plans**: add project ID to issue-to-Linear workflow
+
 ## v0.5.4 (2026-02-17)
 
 ### Fix
