@@ -50,4 +50,4 @@ By opening a pull request to this repository, you indicate that you have read an
 
 For automated CLA tracking, we use CLA Assistant. When you open your first pull request, you will be prompted to sign the CLA electronically.
 
-If you have questions about this CLA, please contact: legal@n8group.com
+If you have questions about this CLA, please contact: contact@n8-group.com
