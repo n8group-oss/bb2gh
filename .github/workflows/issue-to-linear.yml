@@ -66,17 +66,21 @@ jobs:
           GRAPHQL
           )
 
+          # Build variables, omitting optional fields when empty
+          VARIABLES=$(jq -n \
+            --arg teamId "$LINEAR_TEAM_ID" \
+            --arg title "$ISSUE_TITLE" \
+            --arg description "$DESCRIPTION" \
+            --arg projectId "${LINEAR_PROJECT_ID:-}" \
+            --arg labelId "${LINEAR_LABEL_ID:-}" \
+            '{teamId: $teamId, title: $title, description: $description}
+            | if $projectId != "" then . + {projectId: $projectId} else . end
+            | if $labelId != "" then . + {labelIds: [$labelId]} else . end')
+
           RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
             -H "Authorization: ${LINEAR_API_KEY}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n \
-              --arg query "$QUERY" \
-              --arg teamId "$LINEAR_TEAM_ID" \
-              --arg title "$ISSUE_TITLE" \
-              --arg description "$DESCRIPTION" \
-              --arg projectId "$LINEAR_PROJECT_ID" \
-              --arg labelId "$LINEAR_LABEL_ID" \
-              '{query: $query, variables: {teamId: $teamId, title: $title, description: $description, projectId: $projectId, labelIds: [$labelId]}}')")
+            -d "$(jq -n --arg query "$QUERY" --argjson variables "$VARIABLES" '{query: $query, variables: $variables}')")
 
           LINEAR_URL=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.url // empty')
           LINEAR_ID=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.identifier // empty')
