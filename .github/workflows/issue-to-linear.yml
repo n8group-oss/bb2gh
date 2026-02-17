@@ -41,6 +41,7 @@ jobs:
         env:
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
           LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          LINEAR_PROJECT_ID: ${{ secrets.LINEAR_PROJECT_ID }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
@@ -52,11 +53,12 @@ jobs:
           DESCRIPTION="**GitHub Issue**: [#${ISSUE_NUMBER}](${ISSUE_URL})\n\n${ISSUE_BODY}"
 
           QUERY=$(cat <<'GRAPHQL'
-          mutation($teamId: String!, $title: String!, $description: String!) {
+          mutation($teamId: String!, $title: String!, $description: String!, $projectId: String) {
             issueCreate(input: {
               teamId: $teamId
               title: $title
               description: $description
+              projectId: $projectId
             }) {
               success
               issue { id identifier url }
@@ -73,7 +75,8 @@ jobs:
               --arg teamId "$LINEAR_TEAM_ID" \
               --arg title "$ISSUE_TITLE" \
               --arg description "$DESCRIPTION" \
-              '{query: $query, variables: {teamId: $teamId, title: $title, description: $description}}')")
+              --arg projectId "$LINEAR_PROJECT_ID" \
+              '{query: $query, variables: {teamId: $teamId, title: $title, description: $description, projectId: $projectId}}')")
 
           LINEAR_URL=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.url // empty')
           LINEAR_ID=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.identifier // empty')
