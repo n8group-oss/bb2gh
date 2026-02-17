@@ -34,14 +34,12 @@ jobs:
           fi
           echo "Configuration validated"
 
-      # Label mapping is deferred — Linear label lookup requires additional API calls
-      # and label IDs are workspace-specific. Can be added when issue-to-Linear matures.
-
       - name: Create Linear issue
         env:
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
           LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
           LINEAR_PROJECT_ID: ${{ secrets.LINEAR_PROJECT_ID }}
+          LINEAR_LABEL_ID: ${{ secrets.LINEAR_LABEL_ID }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
@@ -53,12 +51,13 @@ jobs:
           DESCRIPTION="**GitHub Issue**: [#${ISSUE_NUMBER}](${ISSUE_URL})\n\n${ISSUE_BODY}"
 
           QUERY=$(cat <<'GRAPHQL'
-          mutation($teamId: String!, $title: String!, $description: String!, $projectId: String) {
+          mutation($teamId: String!, $title: String!, $description: String!, $projectId: String, $labelIds: [String!]) {
             issueCreate(input: {
               teamId: $teamId
               title: $title
               description: $description
               projectId: $projectId
+              labelIds: $labelIds
             }) {
               success
               issue { id identifier url }
@@ -76,7 +75,8 @@ jobs:
               --arg title "$ISSUE_TITLE" \
               --arg description "$DESCRIPTION" \
               --arg projectId "$LINEAR_PROJECT_ID" \
-              '{query: $query, variables: {teamId: $teamId, title: $title, description: $description, projectId: $projectId}}')")
+              --arg labelId "$LINEAR_LABEL_ID" \
+              '{query: $query, variables: {teamId: $teamId, title: $title, description: $description, projectId: $projectId, labelIds: [$labelId]}}')")
 
           LINEAR_URL=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.url // empty')
           LINEAR_ID=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.identifier // empty')
