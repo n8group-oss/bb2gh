@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://n8-group.gitbook.io/bb2gh/
+    about: Check our documentation for guides and references
+  - name: Discussions
+    url: https://github.com/n8group-oss/bb2gh/discussions
+    about: Ask questions and discuss with the community

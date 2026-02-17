@@ -1,0 +1,87 @@
+name: Sync Issues to Linear
+
+on:
+  issues:
+    types: [opened]
+
+# Trigger is intentionally narrow: only 'opened'.
+# closed/reopened/edited sync requires a GitHub->Linear ID mapping store.
+# That can be added later via issue comments or a JSON mapping file.
+
+jobs:
+  sync-to-linear:
+    name: Create Linear Issue
+    runs-on: ubuntu-latest
+    # Only run on the canonical repo, never on forks
+    if: github.repository == 'n8group-oss/bb2gh'
+    environment: linear-sync
+    permissions:
+      issues: read
+    steps:
+      - name: Validate required configuration
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${LINEAR_API_KEY:-}" ]; then
+            echo "::error::LINEAR_API_KEY is not set in the linear-sync environment"
+            exit 1
+          fi
+          if [ -z "${LINEAR_TEAM_ID:-}" ]; then
+            echo "::error::LINEAR_TEAM_ID is not set in the linear-sync environment"
+            exit 1
+          fi
+          echo "Configuration validated"
+
+      # Label mapping is deferred — Linear label lookup requires additional API calls
+      # and label IDs are workspace-specific. Can be added when issue-to-Linear matures.
+
+      - name: Create Linear issue
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ secrets.LINEAR_TEAM_ID }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+
+          # Build description with link back to GitHub
+          DESCRIPTION="**GitHub Issue**: [#${ISSUE_NUMBER}](${ISSUE_URL})\n\n${ISSUE_BODY}"
+
+          QUERY=$(cat <<'GRAPHQL'
+          mutation($teamId: String!, $title: String!, $description: String!) {
+            issueCreate(input: {
+              teamId: $teamId
+              title: $title
+              description: $description
+            }) {
+              success
+              issue { id identifier url }
+            }
+          }
+          GRAPHQL
+          )
+
+          RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+            -H "Authorization: ${LINEAR_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg query "$QUERY" \
+              --arg teamId "$LINEAR_TEAM_ID" \
+              --arg title "$ISSUE_TITLE" \
+              --arg description "$DESCRIPTION" \
+              '{query: $query, variables: {teamId: $teamId, title: $title, description: $description}}')")
+
+          LINEAR_URL=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.url // empty')
+          LINEAR_ID=$(echo "$RESPONSE" | jq -r '.data.issueCreate.issue.identifier // empty')
+
+          if [ -n "$LINEAR_URL" ]; then
+            echo "Created Linear issue: ${LINEAR_ID} — ${LINEAR_URL}"
+          else
+            echo "::error::Failed to create Linear issue"
+            echo "$RESPONSE" | jq .
+            exit 1
+          fi

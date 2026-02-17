@@ -1,0 +1,75 @@
+name: Migration Help
+description: Get help with your Bitbucket to GitHub migration
+title: "[Help]: "
+labels: ["question", "migration-help"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help with your migration? We're here to help!
+        
+        **Before asking:**
+        - Check our [documentation](https://n8-group.gitbook.io/bb2gh/)
+        - Review the [troubleshooting guide](https://n8-group.gitbook.io/bb2gh/guides/troubleshooting)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question / Problem
+      description: What do you need help with?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      description: What area is your question about?
+      options:
+        - Getting started / Installation
+        - Configuration
+        - Repository migration
+        - Pull request migration
+        - Issue migration
+        - Git LFS
+        - User mapping
+        - Enterprise / Server setup
+        - Performance / Large migrations
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What I've Tried
+      description: What have you already tried?
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Relevant environment details:
+        - bb2gh version
+        - Bitbucket (Cloud/Server/Data Center)
+        - GitHub (Cloud/Enterprise)
+      placeholder: |
+        bb2gh: 0.1.0
+        Bitbucket: Cloud
+        GitHub: Enterprise Server 3.x
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: Relevant parts of your bb2gh.yaml (remove sensitive data)
+      render: yaml
+
+  - type: checkboxes
+    id: docs
+    attributes:
+      label: Documentation
+      options:
+        - label: I have checked the documentation
+          required: true
