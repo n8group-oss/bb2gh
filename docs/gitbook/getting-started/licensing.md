@@ -53,7 +53,7 @@ bb2gh offers three plans:
 
 | | Free | Pro | Ultimate |
 |---|---|---|---|
-| Repositories | Up to 100 | Unlimited | Unlimited |
+| Repositories | Up to 50 | 50-2,000 (select plan) | Custom |
 | Workers | 1 | Up to 4 | Unlimited |
 | Enterprise features | - | - | Yes |
 
@@ -61,10 +61,8 @@ The free plan covers all core migration features. See [Plans & Features](../guid
 
 ## Need More?
 
-- **Pro** — Parallel workers for faster migrations
-- **Ultimate** — Batch waves, secrets migration, distributed workers, compliance reports
-
-Contact [sales@n8-group.com](mailto:sales@n8-group.com) for Pro and Ultimate licensing.
+- **Pro** — Parallel workers for faster migrations. Visit [bb2gh.dev/#pricing](https://bb2gh.dev/#pricing) to select your plan.
+- **Ultimate** — Batch waves, secrets migration, distributed workers, compliance reports. Contact [sales@n8-group.com](mailto:sales@n8-group.com).
 
 ## Next Steps
 

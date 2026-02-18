@@ -26,15 +26,27 @@ Free plan licenses are sent automatically to your email:
 bb2gh license register --email you@company.com --tier free
 ```
 
-### Pro and Ultimate Plans
+### Pro Plan
 
-For paid plans, registration directs you to the sales team:
+Pro licenses are available through our website with repo-count-based pricing:
 
 ```bash
 bb2gh license register --tier pro
 ```
 
-Contact [sales@n8-group.com](mailto:sales@n8-group.com) for pricing and license keys.
+Visit [bb2gh.dev/#pricing](https://bb2gh.dev/#pricing) to select your repository count and purchase. Your license key will be delivered via email.
+
+Need a custom plan? Contact [sales@n8-group.com](mailto:sales@n8-group.com).
+
+### Ultimate Plan
+
+Ultimate licenses include dedicated migration support and custom configuration:
+
+```bash
+bb2gh license register --tier ultimate
+```
+
+Contact [sales@n8-group.com](mailto:sales@n8-group.com) for a custom quote.
 
 ## Activation
 
@@ -94,7 +106,7 @@ License Status
   License ID:    lic_a1b2c3d4
   Expires:       2027-01-15 (337 days remaining)
   Status:        Valid
-  Repo limit:    Unlimited
+  Repo limit:    Up to 200 repositories
   Workers:       Up to 4
 
 Features

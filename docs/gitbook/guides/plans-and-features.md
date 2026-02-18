@@ -4,7 +4,7 @@ bb2gh offers three plans to match your migration needs.
 
 ## Plan Overview
 
-- **Free** — For small teams migrating up to 100 repositories. All core migration features included.
+- **Free** — For small teams migrating up to 50 repositories. All core migration features included.
 - **Pro** — For teams that need faster migrations with parallel workers.
 - **Ultimate** — For enterprise-scale migrations with distributed workers, secrets management, and compliance reporting.
 
@@ -34,7 +34,7 @@ bb2gh offers three plans to match your migration needs.
 
 | Limit | Free | Pro | Ultimate |
 |-------|:----:|:---:|:--------:|
-| Repositories per migration | 100 | Unlimited | Unlimited |
+| Repositories per migration | 50 | 50-2,000 (select plan) | Custom |
 | Concurrent workers | 1 | 4 | Unlimited |
 
 ## Getting a License
@@ -53,9 +53,15 @@ Check your email for the license key and activate it:
 bb2gh license activate BB2GH-1-...
 ```
 
-### Pro and Ultimate
+### Pro
 
-Contact [sales@n8-group.com](mailto:sales@n8-group.com) for Pro and Ultimate licensing. Include:
+Visit [bb2gh.dev/#pricing](https://bb2gh.dev/#pricing) to select your repository count and purchase a Pro license. Breakpoints from 50 to 2,000 repositories are available.
+
+Need more than 2,000 repos or a custom plan? Contact [sales@n8-group.com](mailto:sales@n8-group.com).
+
+### Ultimate
+
+Contact [sales@n8-group.com](mailto:sales@n8-group.com) for Ultimate licensing. Include:
 
 - Your organization name
 - Expected number of repositories
@@ -63,7 +69,7 @@ Contact [sales@n8-group.com](mailto:sales@n8-group.com) for Pro and Ultimate lic
 
 ## Expired Licenses
 
-When a license expires, bb2gh falls back to Free plan limits automatically. Your migrations continue to work within Free plan boundaries (100 repositories, 1 worker). To restore your full plan, renew your license or register for a new one.
+When a license expires, bb2gh falls back to Free plan limits automatically. Your migrations continue to work within Free plan boundaries (50 repositories, 1 worker). To restore your full plan, renew your license or register for a new one.
 
 ## Checking Your Plan
 

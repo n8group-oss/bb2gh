@@ -350,7 +350,7 @@ See the [SSL Certificate Troubleshooting](ssl-certificates.md#posthog-telemetry-
 
 3. For Pro/Ultimate renewals, contact [sales@n8-group.com](mailto:sales@n8-group.com)
 
-> **Note**: Expired licenses automatically fall back to Free plan limits (100 repositories, 1 worker). Your existing migrations are not affected.
+> **Note**: Expired licenses automatically fall back to Free plan limits (50 repositories, 1 worker). Your existing migrations are not affected.
 
 ### Feature Requires Pro or Ultimate
 
@@ -373,9 +373,9 @@ See the [SSL Certificate Troubleshooting](ssl-certificates.md#posthog-telemetry-
 
 **Solution**:
 
-1. The Free plan allows up to 100 repositories per migration
-2. Split your migration into batches of 100 or fewer
-3. Upgrade to Pro or Ultimate for unlimited repositories — contact [sales@n8-group.com](mailto:sales@n8-group.com)
+1. The Free plan allows up to 50 repositories per migration
+2. Split your migration into batches of 50 or fewer
+3. Upgrade to Pro for more repositories — visit [bb2gh.dev/#pricing](https://bb2gh.dev/#pricing)
 
 ## Getting More Help
 
