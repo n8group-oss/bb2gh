@@ -8,7 +8,7 @@ Before you begin, ensure you have:
 
 1. **bb2gh installed** — See [Installation](installation.md)
 2. **License activated** — Register for a free license (see [Licensing](licensing.md))
-3. **Bitbucket credentials** — API token with repository read access (see [Authentication](authentication.md))
+3. **Bitbucket credentials** — API token (Cloud) or Personal Access Token (Data Center) with repository read access (see [Authentication](authentication.md))
 4. **GitHub credentials** — Personal access token or GitHub App (see [Authentication](authentication.md))
 
 ## Step 1: Configure Authentication
@@ -104,8 +104,13 @@ This checks:
 - Pull requests migrated
 - User attribution correct
 
+## Migrating from Bitbucket Data Center?
+
+If you're migrating from Bitbucket Data Center instead of Cloud, see the [Bitbucket DC Migration Guide](../guides/bitbucket-dc.md). The workflow is the same — just use `--source bitbucket-dc` with the `discover` command and authenticate with a PAT.
+
 ## Next Steps
 
+- [Bitbucket DC Migration](../guides/bitbucket-dc.md) — Migrate from Bitbucket Data Center
 - [User Mapping Guide](../guides/user-mapping.md) — Configure user attribution
 - [LFS Migration](../guides/lfs-migration.md) — Handle large files
 - [Command Reference](../commands/index.md) — Detailed command documentation

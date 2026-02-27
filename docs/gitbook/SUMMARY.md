@@ -31,6 +31,7 @@
 * [License Management](guides/license-management.md)
 * [GitHub Apps](guides/github-apps.md)
 * [SSL Certificates](guides/ssl-certificates.md)
+* [Bitbucket DC Migration](guides/bitbucket-dc.md)
 * [Docker & CI/CD](guides/docker-cicd.md)
 * [Troubleshooting](guides/troubleshooting.md)
 

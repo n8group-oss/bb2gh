@@ -19,6 +19,12 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.7.0 (2026-02-27)
+
+### Feat
+
+- **dc**: Bitbucket Data Center adapter [N8-171]
+
 ## v0.6.1 (2026-02-18)
 
 ### Fix

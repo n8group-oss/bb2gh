@@ -226,6 +226,35 @@ export BB_CLIENT_ID=your-client-id
 export BB_CLIENT_SECRET=your-client-secret
 ```
 
+### Bitbucket Data Center (PAT)
+
+For Bitbucket Data Center (7.x/8.x), authentication uses Personal Access Tokens (PAT).
+
+**Creating a PAT:**
+
+1. Log in to your DC instance
+2. Navigate to **Manage account > Personal access tokens**
+   (or visit `https://<your-dc-server>/plugins/servlet/access-tokens/manage`)
+3. Create a token with **Repository Read** and **Pull Request Read** permissions
+
+**Using the token:**
+
+```bash
+# Interactive setup
+bb2gh auth login
+# → Select "bitbucket-dc" as source type
+# → Enter your DC base URL and PAT
+
+# Quick auth (DC only)
+bb2gh auth dc --url https://bitbucket.mycompany.com
+
+# Or via environment variables
+export BB_DC_TOKEN=your-pat-token
+export BB_DC_URL=https://bitbucket.mycompany.com
+```
+
+See the [Bitbucket DC Migration Guide](../guides/bitbucket-dc.md) for the full walkthrough.
+
 ### Legacy: App Passwords
 
 > **Warning**: App passwords are deprecated and will stop working in June 2026. Use API tokens instead.
@@ -393,7 +422,7 @@ bb2gh discover --workspace my-company
 
 ## Environment Variable Reference
 
-### Bitbucket
+### Bitbucket Cloud
 
 | Variable | Description | Example |
 |----------|-------------|---------|
@@ -406,6 +435,14 @@ bb2gh discover --workspace my-company
 | `BB_API_URL` | API base URL | `https://api.bitbucket.org/2.0` |
 
 Aliases are also accepted: `BITBUCKET_USERNAME`, `BITBUCKET_API_TOKEN`, `BITBUCKET_APP_PASSWORD`, `BITBUCKET_CLIENT_ID`, `BITBUCKET_CLIENT_SECRET`.
+
+### Bitbucket Data Center
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `BB_DC_TOKEN` | DC Personal Access Token | `MDk2MzE...` |
+| `BB_DC_URL` | DC instance base URL | `https://bitbucket.mycompany.com` |
+| `BB_DC_SSL_VERIFY` | SSL verification (true/false/CA path) | `true` |
 
 ### GitHub
 
