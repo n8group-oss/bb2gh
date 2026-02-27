@@ -19,6 +19,27 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.6.1 (2026-02-18)
+
+### Fix
+
+- resolve 4 minor issues in license issuance plan set (M-1 to M-4)
+- validate checkout metadata and add billing_reason to classification
+- add shadow_processed to CHECK constraint and manual approval webhook
+- **plans**: resolve 4 remaining bugs in license issuance plan set
+- **licensing**: close 4 residual operational risks for paid go-live
+- **licensing**: close NG-1 through NG-6 from super-critical review
+- **licensing**: close NG-1 through NG-5 from fourth review round
+- **licensing**: close Gates A-E for paid production no-go criteria
+- **licensing**: resolve 5 remaining hardening findings in issuance plans
+- **licensing**: address 16 critical review findings in issuance plans
+
+## v0.6.0 (2026-02-18)
+
+### Feat
+
+- **licensing**: implement repo-based pricing model [N8-287]
+
 ## v0.5.7 (2026-02-17)
 
 ### Fix
