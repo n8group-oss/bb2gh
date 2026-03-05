@@ -18,6 +18,8 @@ bb2gh discover [OPTIONS]
 | `--exclude PATTERN` | Exclude repositories matching pattern |
 | `--project TEXT` | Filter by Bitbucket project key |
 | `--format FORMAT` | Output format: json, yaml (default: json) |
+| `--report / --no-report` | Generate an HTML discovery report (default: enabled) |
+| `--report-path FILE` | Custom path for the HTML report file |
 
 ## Examples
 
@@ -32,6 +34,12 @@ bb2gh discover --workspace my-company --project CORE --project PLATFORM
 bb2gh discover --workspace my-company \
   --include "backend-*" \
   --exclude "*-deprecated"
+
+# Skip HTML report generation
+bb2gh discover --workspace my-company --no-report
+
+# Custom report output path
+bb2gh discover --workspace my-company --report-path ./reports/discovery.html
 ```
 
 ## Output
@@ -43,5 +51,16 @@ The inventory file contains:
 - LFS status and objects
 - Open pull requests
 - Migration complexity assessment
+
+### HTML Discovery Report
+
+By default, `discover` also generates a self-contained HTML dashboard at `.bb2gh/reports/discovery-report.html`. The report includes:
+
+- **Summary cards** — total repositories, size, complexity breakdown, LFS/large file counts
+- **Charts** — complexity distribution, pipeline migration complexity, project breakdown, size distribution
+- **Sortable table** — all repositories with search, filtering by project/complexity/pipeline status, and pagination
+- **Warnings panel** — flagged issues like large files, LFS usage, high pipeline complexity, archived repos
+
+The report is a single HTML file with no external dependencies — it works offline and can be shared with stakeholders directly. See the [Discovery Report Guide](../guides/discovery-report.md) for details on interpreting the dashboard.
 
 See [Plan Command](plan.md) for using the inventory.

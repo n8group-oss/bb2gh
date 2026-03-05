@@ -19,6 +19,18 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.8.1 (2026-03-04)
+
+### Fix
+
+- **licensing**: update Ed25519 public key [N8-312]
+
+## v0.8.0 (2026-03-04)
+
+### Feat
+
+- **discovery**: add pipeline analysis with pipe registry and complexity scoring [N8-289]
+
 ## v0.7.0 (2026-02-27)
 
 ### Feat

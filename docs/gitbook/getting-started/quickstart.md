@@ -51,6 +51,8 @@ This creates `inventory.json` with details about all repositories including:
 - Open pull requests
 - Migration complexity assessment
 
+It also generates an HTML dashboard at `.bb2gh/reports/discovery-report.html` with charts, a sortable repository table, and warnings. Open it in your browser to review the workspace at a glance. See the [Discovery Report Guide](../guides/discovery-report.md) for details.
+
 ## Step 3: Create a Migration Plan
 
 Generate a migration plan:

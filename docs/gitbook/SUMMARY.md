@@ -22,6 +22,7 @@
 ## Guides
 
 * [Overview](guides/README.md)
+* [Discovery Report](guides/discovery-report.md)
 * [User Mapping](guides/user-mapping.md)
 * [PR Migration](guides/pr-migration.md)
 * [LFS Migration](guides/lfs-migration.md)
