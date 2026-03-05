@@ -19,6 +19,18 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.9.1 (2026-03-05)
+
+### Fix
+
+- **ci**: revert all workflows to ubuntu-latest runners [N8-313] (#56)
+
+## v0.9.0 (2026-03-05)
+
+### Feat
+
+- **reporting**: add discovery report HTML dashboard [N8-313]
+
 ## v0.8.1 (2026-03-04)
 
 ### Fix

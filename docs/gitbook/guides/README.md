@@ -16,10 +16,6 @@ In-depth guides for common migration scenarios.
 
 - [Troubleshooting](troubleshooting.md) -- Common issues and solutions
 
-## Development Guides
-
-- [Linear Workflow](linear-workflow.md) -- Project management and issue tracking integration
-
 ## Planning Your Migration
 
 Before starting, consider:

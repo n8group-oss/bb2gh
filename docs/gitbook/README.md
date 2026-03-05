@@ -12,13 +12,13 @@
 
     Preserve complete Git history including branches, tags, and all commits with proper attribution.
 
-    [Learn more](guides/index.md)
+    [Learn more](guides/README.md)
 
 - **PR & Review Preservation**
 
     Migrate Pull Requests with all comments, reviews, and approval history intact.
 
-    [PR Migration](guides/index.md)
+    [PR Migration](guides/pr-migration.md)
 
 - **Enterprise Ready**
 
@@ -55,7 +55,7 @@ bb2gh validate --migration mig_xxx
 ## Quick Links
 
 - [Installation Guide](getting-started/installation.md) — Get bb2gh installed on your system
-- [Command Reference](commands/index.md) — Detailed documentation for all commands
+- [Command Reference](commands/README.md) — Detailed documentation for all commands
 - [User Mapping Guide](guides/user-mapping.md) — Configure user attribution
 - [bb2gh.dev](https://bb2gh.dev) — Landing page & overview
 
