@@ -27,6 +27,7 @@
 * [PR Migration](guides/pr-migration.md)
 * [LFS Migration](guides/lfs-migration.md)
 * [Secrets Migration](guides/secrets-migration.md)
+* [Parallel Execution](guides/parallel-execution.md)
 * [Enterprise Features](guides/enterprise.md)
 * [Plans & Features](guides/plans-and-features.md)
 * [License Management](guides/license-management.md)

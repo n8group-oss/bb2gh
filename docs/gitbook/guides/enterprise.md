@@ -33,11 +33,12 @@ See [GitHub Apps Guide](github-apps.md) for setup.
 
 ### Multi-App for Maximum Throughput
 
-For large-scale migrations with parallel workers, configure multiple GitHub Apps:
+For large-scale migrations with parallel workers, configure multiple GitHub Apps to multiply your rate limits:
 
 ```yaml
 # ~/.bb2gh/config.yaml
 github:
+  organization: your-target-org
   apps:
     - name: migration-1
       app_id: 11111
@@ -64,9 +65,11 @@ bb2gh migrate --plan plan.json --workers 4
 ```
 
 This gives you:
-- **60,000 requests/hour** (4 x 15,000)
+- **N x rate limit** — Each GitHub App has independent rate limits
 - **Automatic load balancing** across apps
 - **Failover** if one app hits rate limits
+
+See the [Parallel Execution Guide](parallel-execution.md) for detailed tuning and the [GitHub Apps Guide](github-apps.md) for multi-app setup.
 
 ## Distributed Migration
 

@@ -19,6 +19,30 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.12.0 (2026-03-07)
+
+### Feat
+
+- **migration**: add asyncio parallel execution with --workers flag [N8-143] (#60)
+
+## v0.11.0 (2026-03-06)
+
+### Feat
+
+- **licensing**: finalize auto-refresh and sync contract hardening [N8-999] (#58)
+
+## v0.10.1 (2026-03-06)
+
+### Fix
+
+- **cli**: harden license sync correctness [N8-999] (#52)
+
+## v0.10.0 (2026-03-05)
+
+### Feat
+
+- **launch**: update product status to Beta and fix documentation links [N8-313] (#57)
+
 ## v0.9.1 (2026-03-05)
 
 ### Fix

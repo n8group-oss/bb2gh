@@ -83,6 +83,12 @@ Run the migration:
 bb2gh migrate --plan plan.json
 ```
 
+For faster migrations, use parallel workers (Pro and Ultimate plans):
+
+```bash
+bb2gh migrate --plan plan.json --workers 4
+```
+
 The migration will:
 
 1. Clone each repository from Bitbucket
@@ -90,6 +96,8 @@ The migration will:
 3. Migrate pull requests and comments
 4. Configure branch protections
 5. Set up repository settings
+
+See the [Parallel Execution Guide](../guides/parallel-execution.md) for tuning parallel workers.
 
 ## Step 5: Validate the Migration
 
