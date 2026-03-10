@@ -1,0 +1,291 @@
+name: Publish Verified Bundle
+
+on:
+  repository_dispatch:
+    types:
+      - publish-bundle
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: publish-bundle-${{ github.event.client_payload.tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish-bundle:
+    name: Verify Staged Bundle And Publish Public Release
+    if: github.repository == 'n8group-oss/bb2gh'
+    runs-on: ubuntu-latest
+    env:
+      DRAFT_TAG: ${{ github.event.client_payload.draft_tag }}
+      PUBLIC_TAG: ${{ github.event.client_payload.tag }}
+      EXPECTED_VERSION: ${{ github.event.client_payload.version }}
+      EXPECTED_SOURCE_SHA: ${{ github.event.client_payload.source_sha }}
+      EXPECTED_MANIFEST_FILENAME: ${{ github.event.client_payload.manifest_filename }}
+      EXPECTED_MANIFEST_SIGNATURE_FILENAME: ${{ github.event.client_payload.manifest_signature_filename }}
+      EXPECTED_MANIFEST_SHA256: ${{ github.event.client_payload.manifest_sha256 }}
+      EXPECTED_WHEEL_FILENAME: ${{ github.event.client_payload.wheel_filename }}
+      EXPECTED_CHECKSUM_FILENAME: ${{ github.event.client_payload.checksum_filename }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate dispatch payload
+        run: |
+          python - <<'PY'
+          import os
+
+          required = [
+              "DRAFT_TAG",
+              "PUBLIC_TAG",
+              "EXPECTED_VERSION",
+              "EXPECTED_SOURCE_SHA",
+              "EXPECTED_MANIFEST_FILENAME",
+              "EXPECTED_MANIFEST_SIGNATURE_FILENAME",
+              "EXPECTED_MANIFEST_SHA256",
+              "EXPECTED_WHEEL_FILENAME",
+              "EXPECTED_CHECKSUM_FILENAME",
+          ]
+
+          for name in required:
+              if not os.environ.get(name):
+                  raise SystemExit(f"Missing required repository_dispatch payload field: {name}")
+
+          if os.environ["PUBLIC_TAG"] != f"v{os.environ['EXPECTED_VERSION']}":
+              raise SystemExit("Dispatch tag does not match the version payload")
+
+          if os.environ["DRAFT_TAG"] != f"bundle-v{os.environ['EXPECTED_VERSION']}":
+              raise SystemExit("Dispatch draft tag does not match the version payload")
+
+          if os.environ["EXPECTED_MANIFEST_FILENAME"] != "release-manifest.json":
+              raise SystemExit("Dispatch manifest filename must be release-manifest.json")
+
+          if os.environ["EXPECTED_MANIFEST_SIGNATURE_FILENAME"] != "release-manifest.json.sig":
+              raise SystemExit("Dispatch signature filename must be release-manifest.json.sig")
+
+          if os.environ["EXPECTED_CHECKSUM_FILENAME"] != "SHA256SUMS":
+              raise SystemExit("Dispatch checksum filename must be SHA256SUMS")
+          PY
+
+      - name: Confirm staged release is still draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          is_draft="$(gh release view "$DRAFT_TAG" --repo "$GITHUB_REPOSITORY" --json isDraft --jq '.isDraft')"
+          if [ "$is_draft" != "true" ]; then
+            echo "Expected $DRAFT_TAG to remain a draft release until publish succeeds" >&2
+            exit 1
+          fi
+
+      - name: Download staged bundle assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          rm -rf release-bundle pypi-dist
+          mkdir -p release-bundle pypi-dist
+
+          gh release download "$DRAFT_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir release-bundle \
+            --pattern "$EXPECTED_WHEEL_FILENAME" \
+            --pattern "$EXPECTED_MANIFEST_FILENAME" \
+            --pattern "$EXPECTED_MANIFEST_SIGNATURE_FILENAME" \
+            --pattern "$EXPECTED_CHECKSUM_FILENAME" \
+            --pattern "sbom-*.json"
+
+      - name: Install manifest schema validator
+        run: python -m pip install jsonschema
+
+      - name: Verify manifest schema
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          import jsonschema
+
+          bundle_dir = Path("release-bundle")
+          schema = json.loads(Path(".github/release-manifest.schema.json").read_text(encoding="utf-8"))
+          manifest_path = bundle_dir / os.environ["EXPECTED_MANIFEST_FILENAME"]
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+          jsonschema.validate(manifest, schema)
+
+          sbom_files = sorted(path.name for path in bundle_dir.glob("sbom-*.json"))
+          if sorted(manifest["sbom_files"]) != sbom_files:
+              raise SystemExit("release-manifest.json does not match the staged SBOM files")
+
+          actual_names = {path.name for path in bundle_dir.iterdir() if path.is_file()}
+          expected_names = {
+              os.environ["EXPECTED_WHEEL_FILENAME"],
+              os.environ["EXPECTED_MANIFEST_FILENAME"],
+              os.environ["EXPECTED_MANIFEST_SIGNATURE_FILENAME"],
+              os.environ["EXPECTED_CHECKSUM_FILENAME"],
+              *sbom_files,
+          }
+          if actual_names != expected_names:
+              raise SystemExit("release-bundle/ does not match the exact staged asset list")
+          PY
+
+      - name: Verify manifest signature
+        env:
+          RELEASE_SIGNING_PUBLIC_KEY: ${{ secrets.RELEASE_SIGNING_PUBLIC_KEY }}
+        run: |
+          set -euo pipefail
+
+          key_file=$(mktemp)
+          trap 'rm -f "$key_file"' EXIT
+
+          printf '%s' "$RELEASE_SIGNING_PUBLIC_KEY" > "$key_file"
+          openssl dgst -sha256 -verify "$key_file" \
+            -signature "release-bundle/$EXPECTED_MANIFEST_SIGNATURE_FILENAME" \
+            "release-bundle/$EXPECTED_MANIFEST_FILENAME"
+
+      - name: Verify exact bundle checksums
+        run: |
+          set -euo pipefail
+
+          (
+            cd release-bundle
+            sha256sum -c SHA256SUMS
+          )
+
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          bundle_dir = Path("release-bundle")
+          manifest_path = bundle_dir / os.environ["EXPECTED_MANIFEST_FILENAME"]
+          wheel_path = bundle_dir / os.environ["EXPECTED_WHEEL_FILENAME"]
+          checksum_path = bundle_dir / os.environ["EXPECTED_CHECKSUM_FILENAME"]
+
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          if manifest["version"] != os.environ["EXPECTED_VERSION"]:
+              raise SystemExit("release-manifest.json version does not match the dispatch payload")
+
+          if manifest["git_sha"] != os.environ["EXPECTED_SOURCE_SHA"]:
+              raise SystemExit("release-manifest.json git_sha does not match the dispatch payload")
+
+          artifact = manifest["artifacts"][0]
+          if artifact["filename"] != os.environ["EXPECTED_WHEEL_FILENAME"]:
+              raise SystemExit("release-manifest.json does not match the staged wheel filename")
+
+          manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+          if manifest_sha256 != os.environ["EXPECTED_MANIFEST_SHA256"]:
+              raise SystemExit("release-manifest.json digest does not match the dispatch payload")
+
+          wheel_sha256 = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
+          if artifact["sha256"] != wheel_sha256:
+              raise SystemExit("release-manifest.json does not match the staged wheel digest")
+
+          checksum_targets = set()
+          for line in checksum_path.read_text(encoding="utf-8").splitlines():
+              parts = line.split(maxsplit=1)
+              if len(parts) != 2:
+                  raise SystemExit("SHA256SUMS contains an invalid line")
+              checksum_targets.add(parts[1].lstrip("*"))
+
+          expected_targets = {
+              os.environ["EXPECTED_WHEEL_FILENAME"],
+              os.environ["EXPECTED_MANIFEST_FILENAME"],
+              os.environ["EXPECTED_MANIFEST_SIGNATURE_FILENAME"],
+              *manifest["sbom_files"],
+          }
+          if checksum_targets != expected_targets:
+              raise SystemExit("SHA256SUMS does not match the staged bundle files")
+          PY
+
+      - name: Stage exact wheel for PyPI
+        run: |
+          set -euo pipefail
+          cp "release-bundle/$EXPECTED_WHEEL_FILENAME" pypi-dist/
+
+      - name: Publish exact uploaded wheel to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: pypi-dist/
+
+      - name: Render public release notes
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8").splitlines()
+          target_headers = [f"## {os.environ['PUBLIC_TAG']}", f"## {os.environ['EXPECTED_VERSION']}"]
+
+          start = None
+          for index, line in enumerate(changelog):
+              if any(line.startswith(header) for header in target_headers):
+                  start = index
+                  break
+
+          if start is None:
+              raise SystemExit("CHANGELOG.md does not contain a release section for this version")
+
+          end = len(changelog)
+          for index in range(start + 1, len(changelog)):
+              if changelog[index].startswith("## "):
+                  end = index
+                  break
+
+          notes = "\n".join(changelog[start:end]).strip()
+          output = (
+              f"{notes}\n\n"
+              "### Release Provenance\n\n"
+              f"- Verified staging draft: `{os.environ['DRAFT_TAG']}`\n"
+              f"- Verified manifest: `{os.environ['EXPECTED_MANIFEST_FILENAME']}`\n"
+              f"- Private source SHA: `{os.environ['EXPECTED_SOURCE_SHA']}`\n"
+          )
+          Path("release-notes.md").write_text(output + "\n", encoding="utf-8")
+          PY
+
+      - name: Publish canonical GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "$PUBLIC_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$PUBLIC_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "bb2gh $PUBLIC_TAG" \
+              --notes-file release-notes.md \
+              --latest
+          else
+            gh release create "$PUBLIC_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "bb2gh $PUBLIC_TAG" \
+              --notes-file release-notes.md \
+              --latest
+          fi
+
+          gh release upload "$PUBLIC_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --clobber \
+            "release-bundle/$EXPECTED_WHEEL_FILENAME" \
+            "release-bundle/$EXPECTED_MANIFEST_FILENAME" \
+            "release-bundle/$EXPECTED_MANIFEST_SIGNATURE_FILENAME" \
+            "release-bundle/$EXPECTED_CHECKSUM_FILENAME" \
+            release-bundle/sbom-spdx.json \
+            release-bundle/sbom-cyclonedx.json
+
+      - name: Retire staging draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release delete "$DRAFT_TAG" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
