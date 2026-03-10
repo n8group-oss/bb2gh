@@ -58,8 +58,8 @@ staging draft tag, manifest filename, and private source SHA.
 
 - If schema validation, signature verification, or checksum validation fails,
   stop before PyPI publish.
-- If PyPI publish fails, the release stays draft if PyPI publish fails and the
-  canonical `v<version>` release must not be created.
+- If PyPI publish fails, leave the staging release as a draft and do not create
+  the canonical `v<version>` release.
 - If final release creation fails after PyPI publish, keep the staging bundle
   intact and retry only the public-side release finalization steps.
 - Reruns after a successful PyPI upload rely on `skip-existing: true` in

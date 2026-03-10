@@ -107,7 +107,7 @@ jobs:
             --pattern "sbom-*.json"
 
       - name: Install manifest schema validator
-        run: python -m pip install jsonschema
+        run: python -m pip install jsonschema==4.22.0
 
       - name: Verify manifest schema
         run: |
@@ -168,6 +168,7 @@ jobs:
           import hashlib
           import json
           import os
+          import zipfile
           from pathlib import Path
 
           bundle_dir = Path("release-bundle")
@@ -193,6 +194,30 @@ jobs:
           wheel_sha256 = hashlib.sha256(wheel_path.read_bytes()).hexdigest()
           if artifact["sha256"] != wheel_sha256:
               raise SystemExit("release-manifest.json does not match the staged wheel digest")
+
+          with zipfile.ZipFile(wheel_path) as wheel_zip:
+              metadata_path = next(
+                  (
+                      name
+                      for name in wheel_zip.namelist()
+                      if name.endswith(".dist-info/METADATA")
+                  ),
+                  None,
+              )
+              if metadata_path is None:
+                  raise SystemExit("staged wheel is missing a dist-info/METADATA file")
+              metadata_text = wheel_zip.read(metadata_path).decode("utf-8", errors="replace")
+
+          wheel_version_line = next(
+              (line for line in metadata_text.splitlines() if line.startswith("Version: ")),
+              None,
+          )
+          if wheel_version_line is None:
+              raise SystemExit("staged wheel METADATA is missing a Version field")
+
+          wheel_version = wheel_version_line.split("Version: ", 1)[1].strip()
+          if wheel_version != os.environ["EXPECTED_VERSION"]:
+              raise SystemExit("staged wheel METADATA version does not match the dispatch payload")
 
           checksum_targets = set()
           for line in checksum_path.read_text(encoding="utf-8").splitlines():

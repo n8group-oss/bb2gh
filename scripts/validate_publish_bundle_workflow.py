@@ -4,17 +4,26 @@ import json
 from pathlib import Path
 
 
-def _assert_contains(text: str, needle: str) -> None:
-    assert needle in text, f"Expected to find {needle!r}"
+def _fail(message: str) -> None:
+    raise SystemExit(message)
 
 
-def _assert_in_order(text: str, needles: list[str]) -> None:
+def _require(condition: bool, message: str) -> None:
+    if not condition:
+        _fail(message)
+
+
+def _require_contains(text: str, needle: str) -> None:
+    _require(needle in text, f"Expected to find {needle!r}")
+
+
+def _require_in_order(text: str, needles: list[str]) -> None:
     positions = []
     for needle in needles:
         position = text.find(needle)
-        assert position != -1, f"Expected to find {needle!r}"
+        _require(position != -1, f"Expected to find {needle!r}")
         positions.append(position)
-    assert positions == sorted(positions), f"Expected strings in order: {needles!r}"
+    _require(positions == sorted(positions), f"Expected strings in order: {needles!r}")
 
 
 def main() -> None:
@@ -30,22 +39,25 @@ def main() -> None:
     guide = guide_path.read_text(encoding="utf-8")
     summary = summary_path.read_text(encoding="utf-8")
 
-    _assert_contains(workflow, "repository_dispatch:")
-    _assert_contains(workflow, "publish-bundle")
-    _assert_contains(workflow, "gh-action-pypi-publish")
-    _assert_contains(workflow, "sha256sum -c SHA256SUMS")
-    _assert_contains(workflow, "release-manifest.json")
-    _assert_contains(workflow, "release-manifest.schema.json")
-    _assert_contains(workflow, "openssl dgst -sha256 -verify")
-    _assert_contains(workflow, "packages-dir: pypi-dist/")
-    _assert_contains(workflow, "skip-existing: true")
-    _assert_contains(workflow, "bundle-v")
-    _assert_contains(workflow, "draft")
-    _assert_contains(workflow, "environment:")
-    _assert_contains(workflow, "name: pypi")
-    _assert_contains(workflow, "release-bundle/*")
+    _require_contains(workflow, "repository_dispatch:")
+    _require_contains(workflow, "publish-bundle")
+    _require_contains(workflow, "gh-action-pypi-publish")
+    _require_contains(workflow, "sha256sum -c SHA256SUMS")
+    _require_contains(workflow, "release-manifest.json")
+    _require_contains(workflow, "release-manifest.schema.json")
+    _require_contains(workflow, "openssl dgst -sha256 -verify")
+    _require_contains(workflow, "packages-dir: pypi-dist/")
+    _require_contains(workflow, "skip-existing: true")
+    _require_contains(workflow, "bundle-v")
+    _require_contains(workflow, "draft")
+    _require_contains(workflow, "environment:")
+    _require_contains(workflow, "name: pypi")
+    _require_contains(workflow, "release-bundle/*")
+    _require_contains(workflow, "jsonschema==4.22.0")
+    _require_contains(workflow, ".dist-info/METADATA")
+    _require_contains(workflow, "staged wheel METADATA version does not match the dispatch payload")
 
-    _assert_in_order(
+    _require_in_order(
         workflow,
         [
             "name: Verify manifest schema",
@@ -56,19 +68,28 @@ def main() -> None:
         ],
     )
 
-    assert schema["type"] == "object"
-    assert schema["required"] == ["version", "git_sha", "artifacts", "sbom_files"]
-    assert schema["properties"]["artifacts"]["minItems"] == 1
-    assert schema["properties"]["artifacts"]["maxItems"] == 1
+    _require(schema["type"] == "object", "release-manifest schema must be an object")
+    _require(
+        schema["required"] == ["version", "git_sha", "artifacts", "sbom_files"],
+        "release-manifest schema required fields changed unexpectedly",
+    )
+    _require(
+        schema["properties"]["artifacts"]["minItems"] == 1,
+        "release-manifest schema must require one artifact",
+    )
+    _require(
+        schema["properties"]["artifacts"]["maxItems"] == 1,
+        "release-manifest schema must cap artifacts at one item",
+    )
 
-    _assert_contains(docs, "public repo owns the visible release")
-    _assert_contains(docs, "publish the exact uploaded wheel")
-    _assert_contains(docs, "verify the detached manifest signature before checksum validation")
-    _assert_contains(docs, "release stays draft if PyPI publish fails")
-    _assert_contains(docs, "skip-existing")
-    _assert_contains(docs, "environment: pypi")
-    _assert_contains(guide, "Stage 1 Public Release Hardening")
-    _assert_contains(summary, "guides/release-hardening-stage1.md")
+    _require_contains(docs, "public repo owns the visible release")
+    _require_contains(docs, "publish the exact uploaded wheel")
+    _require_contains(docs, "verify the detached manifest signature before checksum validation")
+    _require_contains(docs, "leave the staging release as a draft and do not create")
+    _require_contains(docs, "skip-existing")
+    _require_contains(docs, "environment: pypi")
+    _require_contains(guide, "Stage 1 Public Release Hardening")
+    _require_contains(summary, "guides/release-hardening-stage1.md")
 
 
 if __name__ == "__main__":
