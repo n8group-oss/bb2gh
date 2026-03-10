@@ -312,4 +312,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gh release delete "$DRAFT_TAG" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+          gh release delete "$DRAFT_TAG" --repo "$GITHUB_REPOSITORY" --yes
+
+          if gh api "repos/$GITHUB_REPOSITORY/git/refs/tags/$DRAFT_TAG" >/dev/null 2>&1; then
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$DRAFT_TAG"
+          fi
