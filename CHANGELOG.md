@@ -19,6 +19,12 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.14.2 (2026-03-10)
+
+### Fix
+
+- **release**: include auth setup in package readme [N8-345]
+
 ## v0.14.1 (2026-03-10)
 
 ### Fix
