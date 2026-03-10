@@ -56,6 +56,19 @@ def main() -> None:
     _require_contains(workflow, "jsonschema==4.22.0")
     _require_contains(workflow, ".dist-info/METADATA")
     _require_contains(workflow, "staged wheel METADATA version does not match the dispatch payload")
+    _require_contains(
+        workflow,
+        'gh release delete "$DRAFT_TAG" --repo "$GITHUB_REPOSITORY" --yes',
+    )
+    _require_contains(
+        workflow,
+        'if gh api "repos/$GITHUB_REPOSITORY/git/refs/tags/$DRAFT_TAG" >/dev/null 2>&1; then',
+    )
+    _require_contains(
+        workflow,
+        'gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/$DRAFT_TAG"',
+    )
+    _require("--cleanup-tag" not in workflow, "staging draft cleanup must tolerate a missing tag")
 
     _require_in_order(
         workflow,
