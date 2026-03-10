@@ -1,17 +1,28 @@
 # Installation
 
-bb2gh can be installed via pip, pipx, Docker, or from source.
+Stage 1 hardened distribution supports two public release channels: PyPI and
+GitHub Releases.
+
+The private repository builds the hardened release bundle, and the public
+repository now owns the visible GitHub Release plus the final PyPI publication
+of that exact wheel.
 
 ## Requirements
 
 - **Python 3.11+** — bb2gh uses modern Python features
 - **Git 2.25+** — Required for repository operations
 - **git-lfs** — Required if migrating LFS-enabled repositories
+- **supported platforms** — The current hardened wheel is a pure Python
+  `py3-none-any` artifact, so the supported public platforms are Linux, macOS,
+  and Windows environments that provide Python 3.11+, Git, and git-lfs.
+  Other environments are outside the supported Stage 1 matrix, and the public
+  release path does not provide a source-distribution fallback.
 
-## Installation Methods
+## Install From PyPI
 
 ### pipx (Recommended)
 
+[PyPI](https://pypi.org/project/bb2gh/) is the default public install channel.
 [pipx](https://pipx.pypa.io/) installs CLI tools in isolated environments:
 
 ```bash
@@ -22,7 +33,7 @@ This keeps bb2gh's dependencies separate from your system Python.
 
 ### pip
 
-Install directly with pip:
+Install the published hardened wheel directly from PyPI:
 
 ```bash
 pip install bb2gh
@@ -34,43 +45,46 @@ For user installation (no sudo required):
 pip install --user bb2gh
 ```
 
-### Docker
+## Install From GitHub Releases
 
-Pull the official Docker image (multi-arch: amd64 + arm64):
+The public repository publishes the exact wheel that was verified from the
+private release bundle. Download the wheel plus `SHA256SUMS` from
+[GitHub Releases](https://github.com/n8group-oss/bb2gh/releases) and verify the
+checksum before installing.
 
-```bash
-docker pull ghcr.io/n8group-oss/bb2gh:latest
-```
-
-Run with:
-
-```bash
-docker run --rm \
-  -e BB_USERNAME=your-username \
-  -e BB_API_TOKEN=your-token \
-  -e GH_TOKEN=ghp_your-token \
-  -v $(pwd):/workspace \
-  ghcr.io/n8group-oss/bb2gh:latest \
-  discover --workspace my-workspace
-```
-
-Or use Docker Compose (a `docker-compose.yml` is included in the repository):
+Linux:
 
 ```bash
-docker compose run --rm bb2gh discover --workspace my-workspace
+sha256sum -c SHA256SUMS
 ```
 
-For CI/CD pipeline usage, see the [Docker & CI/CD Guide](../guides/docker-cicd.md).
-
-### From Source
-
-Clone and install in development mode:
+macOS:
 
 ```bash
-git clone https://github.com/n8group-oss/bb2gh.git
-cd bb2gh
-pip install -e .
+shasum -a 256 -c SHA256SUMS
 ```
+
+Windows PowerShell:
+
+```powershell
+$expected = (Get-Content .\SHA256SUMS | Select-String 'bb2gh-<version>-py3-none-any.whl').ToString().Split(' ')[0]
+$actual = (Get-FileHash .\bb2gh-<version>-py3-none-any.whl -Algorithm SHA256).Hash.ToLower()
+if ($actual -ne $expected) { throw "SHA256 mismatch" }
+```
+
+After checksum verification succeeds, install the wheel:
+
+```bash
+pip install ./bb2gh-<version>-py3-none-any.whl
+```
+
+## Unsupported Or Paused Paths
+
+- `source-install from the public repo is unsupported` in Stage 1 because the
+  hardened release path is wheel-only.
+- Docker publication is paused in the hardened lane until it can consume the
+  exact hardened wheel instead of rebuilding from source.
+- Homebrew is paused until a hardened formula exists.
 
 ## Verify Installation
 

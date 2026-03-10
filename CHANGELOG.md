@@ -19,6 +19,18 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.13.1 (2026-03-10)
+
+### Refactor
+
+- use migration-core for GitHub integrations
+
+## v0.13.0 (2026-03-10)
+
+### Feat
+
+- **cleanup**: add repository history cleanup module [N8-156] (#64)
+
 ## v0.12.0 (2026-03-07)
 
 ### Feat
