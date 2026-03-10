@@ -1,18 +1,19 @@
 # Command Reference
 
-bb2gh provides a Terraform-inspired workflow with six main commands.
+bb2gh provides a Terraform-inspired workflow with seven main commands.
 
 ## Workflow Overview
 
 ```mermaid
 graph LR
     A[discover] --> B[plan]
-    B --> C[migrate]
-    C --> D[validate]
-    D --> E{Success?}
-    E -->|Yes| F[Done]
-    E -->|No| G[rollback]
-    G --> B
+    B --> C[cleanup]
+    C --> D[migrate]
+    D --> E[validate]
+    E --> F{Success?}
+    F -->|Yes| G[Done]
+    F -->|No| H[rollback]
+    H --> B
 ```
 
 ## Commands
@@ -25,6 +26,7 @@ graph LR
 | [validate](validate.md) | Verify migration completeness |
 | [status](status.md) | Check migration progress |
 | [rollback](rollback.md) | Revert a failed migration |
+| [cleanup](cleanup.md) | Remove or convert oversized files from repository history |
 
 ## Global Options
 

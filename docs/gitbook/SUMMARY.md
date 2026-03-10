@@ -18,6 +18,7 @@
 * [validate](commands/validate.md)
 * [status](commands/status.md)
 * [rollback](commands/rollback.md)
+* [cleanup](commands/cleanup.md)
 
 ## Guides
 
