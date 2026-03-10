@@ -19,6 +19,34 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.14.1 (2026-03-10)
+
+### Fix
+
+- **release**: fall back to sync app secrets [N8-345]
+
+## v0.14.0 (2026-03-10)
+
+### Feat
+
+- **release**: add obfuscation pilot lane [N8-345]
+- **release**: hand off release bundle to public repo [N8-345]
+- **release**: remove sdist from hardened lane [N8-345]
+- **release**: add hardened bundle metadata [N8-345]
+- **release**: split public packaging metadata [N8-345]
+
+### Fix
+
+- **release**: exclude plaintext files from obfuscation staging [N8-345]
+- **release**: enforce single-wheel bundle contract [N8-345]
+- **release**: tighten handoff contract validation [N8-345]
+- **release**: seal serialized handoff contract [N8-345]
+- **release**: serialize and verify signed handoff [N8-345]
+- **release**: sign and pin public handoff bundle [N8-345]
+- **release**: validate staged public handoff bundle [N8-345]
+- **release**: cover bundle manifest integrity [N8-345]
+- **release**: dispatch release workflow explicitly [N8-345]
+
 ## v0.13.1 (2026-03-10)
 
 ### Refactor
