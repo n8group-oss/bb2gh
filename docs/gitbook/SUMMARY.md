@@ -33,6 +33,7 @@
 * [Plans & Features](guides/plans-and-features.md)
 * [License Management](guides/license-management.md)
 * [GitHub Apps](guides/github-apps.md)
+* [Release Hardening Stage 1](guides/release-hardening-stage1.md)
 * [SSL Certificates](guides/ssl-certificates.md)
 * [Bitbucket DC Migration](guides/bitbucket-dc.md)
 * [Docker & CI/CD](guides/docker-cicd.md)

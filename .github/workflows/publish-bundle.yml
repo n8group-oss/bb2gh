@@ -18,6 +18,9 @@ jobs:
     name: Verify Staged Bundle And Publish Public Release
     if: github.repository == 'n8group-oss/bb2gh'
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/bb2gh
     env:
       DRAFT_TAG: ${{ github.event.client_payload.draft_tag }}
       PUBLIC_TAG: ${{ github.event.client_payload.tag }}
@@ -217,6 +220,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: pypi-dist/
+          skip-existing: true
 
       - name: Render public release notes
         run: |
@@ -276,12 +280,7 @@ jobs:
           gh release upload "$PUBLIC_TAG" \
             --repo "$GITHUB_REPOSITORY" \
             --clobber \
-            "release-bundle/$EXPECTED_WHEEL_FILENAME" \
-            "release-bundle/$EXPECTED_MANIFEST_FILENAME" \
-            "release-bundle/$EXPECTED_MANIFEST_SIGNATURE_FILENAME" \
-            "release-bundle/$EXPECTED_CHECKSUM_FILENAME" \
-            release-bundle/sbom-spdx.json \
-            release-bundle/sbom-cyclonedx.json
+            release-bundle/*
 
       - name: Retire staging draft release
         env:

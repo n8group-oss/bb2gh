@@ -10,7 +10,7 @@ public tag, and the final PyPI publish step.
 
 - `RELEASE_SIGNING_PUBLIC_KEY` GitHub Actions secret containing the PEM-encoded
   public verification key for `release-manifest.json.sig`
-- PyPI trusted publishing configured for this repository environment
+- PyPI trusted publishing configured for the workflow environment: `environment: pypi`
 
 ## Dispatch Contract
 
@@ -62,3 +62,6 @@ staging draft tag, manifest filename, and private source SHA.
   canonical `v<version>` release must not be created.
 - If final release creation fails after PyPI publish, keep the staging bundle
   intact and retry only the public-side release finalization steps.
+- Reruns after a successful PyPI upload rely on `skip-existing: true` in
+  `gh-action-pypi-publish`, so the workflow can safely skip the already-published
+  wheel and continue release finalization.

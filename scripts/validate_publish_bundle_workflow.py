@@ -21,10 +21,14 @@ def main() -> None:
     workflow_path = Path(".github/workflows/publish-bundle.yml")
     schema_path = Path(".github/release-manifest.schema.json")
     docs_path = Path("docs/release-hardening-stage1.md")
+    guide_path = Path("docs/gitbook/guides/release-hardening-stage1.md")
+    summary_path = Path("docs/gitbook/SUMMARY.md")
 
     workflow = workflow_path.read_text(encoding="utf-8")
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
     docs = docs_path.read_text(encoding="utf-8")
+    guide = guide_path.read_text(encoding="utf-8")
+    summary = summary_path.read_text(encoding="utf-8")
 
     _assert_contains(workflow, "repository_dispatch:")
     _assert_contains(workflow, "publish-bundle")
@@ -34,8 +38,12 @@ def main() -> None:
     _assert_contains(workflow, "release-manifest.schema.json")
     _assert_contains(workflow, "openssl dgst -sha256 -verify")
     _assert_contains(workflow, "packages-dir: pypi-dist/")
+    _assert_contains(workflow, "skip-existing: true")
     _assert_contains(workflow, "bundle-v")
     _assert_contains(workflow, "draft")
+    _assert_contains(workflow, "environment:")
+    _assert_contains(workflow, "name: pypi")
+    _assert_contains(workflow, "release-bundle/*")
 
     _assert_in_order(
         workflow,
@@ -57,6 +65,10 @@ def main() -> None:
     _assert_contains(docs, "publish the exact uploaded wheel")
     _assert_contains(docs, "verify the detached manifest signature before checksum validation")
     _assert_contains(docs, "release stays draft if PyPI publish fails")
+    _assert_contains(docs, "skip-existing")
+    _assert_contains(docs, "environment: pypi")
+    _assert_contains(guide, "Stage 1 Public Release Hardening")
+    _assert_contains(summary, "guides/release-hardening-stage1.md")
 
 
 if __name__ == "__main__":
