@@ -19,6 +19,12 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.18.0 (2026-03-19)
+
+### Feat
+
+- **pr**: closed PR fidelity and historical fallback hardening [N8-348] (#76)
+
 ## v0.17.0 (2026-03-17)
 
 ### Feat
