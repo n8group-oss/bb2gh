@@ -104,12 +104,12 @@ By default, `discover` also generates an Excel workbook at `.bb2gh/reports/<work
 
 The workbook contains four sheets:
 
-- **Summary** — discovery totals, workspace user count, metadata, and provenance hyperlinks
-- **Projects** — derived Bitbucket project rollups
-- **Repositories** — one row per discovered repository with migration-relevant fields
+- **Summary** — an ADO-style branded summary sheet with metadata, discovery totals, provenance hyperlinks, and an embedded project rollup table
+- **Projects** — derived Bitbucket project rollups with human-readable total sizes
+- **Repositories** — one row per discovered repository with migration-relevant fields, including exact `Size Bytes` and readable `Size`
 - **Warnings** — one row per explicit warning or follow-up item
 
-The HTML report and Excel workbook use the same internal projection, so project rollups and provenance links stay aligned across both deliverables.
+The HTML report and Excel workbook use the same internal projection, so project rollups and provenance links stay aligned across both deliverables. The workbook styling matches the ADO2GH presentation approach with branded summary rows, styled section blocks, wrapped cells, freeze panes, tab colors, and semantic fills for complexity and warning severity.
 When discovery runs with `--no-analyze`, the workbook leaves analysis-derived cells blank instead of showing implicit zero/default values.
 
 See [Plan Command](plan.md) for using the inventory.

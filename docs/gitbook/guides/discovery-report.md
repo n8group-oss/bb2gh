@@ -123,12 +123,13 @@ This makes shared documents self-identifying even when they are forwarded intern
 
 The Excel workbook contains four sheets:
 
-- **Summary** — discovery totals, workspace user count, metadata, and provenance hyperlinks
-- **Projects** — one row per derived Bitbucket project summary
-- **Repositories** — one row per discovered repository with migration-relevant details
+- **Summary** — an ADO-style branded worksheet with metadata, discovery totals, provenance hyperlinks, and an embedded project rollup table
+- **Projects** — one row per derived Bitbucket project summary with human-readable total sizes
+- **Repositories** — one row per discovered repository with both exact `Size Bytes` and readable `Size` columns
 - **Warnings** — one row per explicit repository warning
 
 The workbook is generated from the same shared projection as the HTML report, so project rollups, warning rows, and provenance information stay aligned.
+The workbook presentation follows the same design system as the ADO2GH discovery export: branded summary header, colored section blocks, styled headers, wrapped cells, freeze panes, tab colors, and semantic highlighting for migration complexity and warning severity.
 
 When discovery runs with `--no-analyze`, the workbook leaves analysis-derived cells blank rather than using implicit defaults that could be misread as actual discovery results.
 If workspace user count is unavailable, the `Summary` sheet marks it as `Unavailable`.
@@ -203,9 +204,9 @@ Open the HTML report and verify:
 
 Open the Excel workbook and verify:
 
-- `Summary` contains `Workspace User Count`
-- `Projects` contains one row per derived Bitbucket project
-- `Repositories` contains the same repository ordering and reporting data as the HTML projection
+- `Summary` contains the branded discovery header, provenance links, and `Workspace User Count`
+- `Projects` contains one row per derived Bitbucket project and shows `Total Size` in human-readable units
+- `Repositories` contains the same repository ordering and reporting data as the HTML projection, plus exact `Size Bytes` and readable `Size`
 - `Warnings` contains only explicit repository warning rows
 
 If you run a project-filtered discovery, repeat the same checks under `.bb2gh/reports/<workspace>/<project-slug>/`.
