@@ -51,6 +51,15 @@ Options:
 - `--since` - Only migrate PRs updated after this date (ISO format)
 - `--dry-run` - Preview without creating PRs
 
+Closed PRs receive the same high-fidelity treatment as open PRs:
+
+- **Activity timeline** included in the PR body
+- **Comments** migrated as issue or review comments
+- **Labels** applied automatically, including state labels (`migrated-pr`, `pr-merged`, `pr-declined`)
+- **Reviewer info** recorded in the PR body with approval status
+
+When a source branch no longer exists, closed PRs are created as **GitHub Issues** with a structured audit-friendly body containing full metadata (see [Historical Issue Fallback](#historical-issue-fallback) below).
+
 ### Migrate All PRs
 
 Batch migrate PRs using a migration plan file:
@@ -103,9 +112,27 @@ Migrated PRs include an activity timeline in the description showing:
 | 2024-01-15 10:30 | John Doe | Commented |
 | 2024-01-15 14:00 | Jane Doe | Approved |
 
+## Historical Issue Fallback
+
+When a closed PR's source branch no longer exists in GitHub, the PR cannot be recreated as a GitHub pull request. In this case, bb2gh creates a **GitHub Issue** as a structured historical record.
+
+The issue body includes:
+
+- **Header** with state, timestamps, and branch info
+- **Author** with mapped GitHub username (when available)
+- **Reviewer table** showing each reviewer and their approval status
+- **Original description**
+- **Activity timeline** (approvals, updates, state changes)
+- **Comment summary** with count from the source system
+- **Link** to the original Bitbucket PR
+
+The issue is automatically closed and labeled with `migrated-pr` plus a state label (`pr-merged`, `pr-declined`, or `pr-superseded`).
+
+> **Note**: The migration result tracks whether a PR was migrated as an actual PR or as an issue fallback via the `fallback_type` field (`pr`, `issue`, or `gei`).
+
 ## Limitations
 
 - PR creator cannot be changed via GitHub REST API (author shown in attribution header)
 - Inline code review comments become general comments
 - Draft PR status is preserved for open PRs only
-- Closed PRs with missing branches are migrated as GitHub Issues
+- Closed PRs with missing branches are migrated as GitHub Issues (see above)

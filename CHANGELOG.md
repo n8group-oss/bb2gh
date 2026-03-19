@@ -19,6 +19,38 @@
 - LFS detection: Fixed validation to use GitHub API for accurate LFS detection
 - GitHub token fallback: Added `gh auth token` fallback when GH_TOKEN not set
 
+## v0.17.0 (2026-03-17)
+
+### Feat
+
+- **pr**: stabilize source identity and authorship [N8-354]
+
+### Fix
+
+- **pr**: address Copilot review findings [N8-354]
+
+## v0.16.0 (2026-03-13)
+
+### Feat
+
+- **cli**: add shared GitHub target factory
+
+### Fix
+
+- **cli**: harden GitHub credential review follow-ups
+
+## v0.15.0 (2026-03-12)
+
+### Feat
+
+- **pr**: harden cloud open PR comment fidelity
+
+### Fix
+
+- **pr**: restore adapter validation after merge
+- **pr**: avoid duplicate open PR comment timelines
+- **pr**: persist comment migration counts in PR state
+
 ## v0.14.2 (2026-03-10)
 
 ### Fix
